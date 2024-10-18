@@ -3,97 +3,157 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import numpy as np
-import pandas as pd
+import dash_bootstrap_components as dbc
 
-# Define application
-app = dash.Dash(__name__)
+# Define the application with Bootstrap
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+# Layout styling
 app.layout = html.Div([
-    html.H1("Queueing Theory Model for Fog Computing"),
-    
-    html.Div([
-        html.Label("SLA: Guaranteed response time"),
-        dcc.Input(id='sla', type='number', value=4, min=0, max=10, step=1),
-    ]),
+    dbc.Container([
+        html.H1("Queueing Theory Model for Fog Computing", className="text-center my-4", style={'color': '#4b8bbe'}),
 
-    html.Div([
-        html.Label("J: # Jobs (Customers)"),
-        dcc.Input(id='jobs', type='number', value=100, min=0, max=500, step=10),
-    ]),
-
-    html.Div([
-        html.Label("μ^E: Service rate (ES)"),
-        dcc.Input(id='mu_es', type='number', value=9/10, min=0.1, max=1, step=0.01),
-    ]),
-
-    html.Div([
-        html.Label("μ^D: Service rate (DS)"),
-        dcc.Input(id='mu_ds', type='number', value=4/10, min=0.1, max=1, step=0.01),
-    ]),
-
-    html.Div([
-        html.Label("μ^P: Service rate (PS)"),
-        dcc.Input(id='mu_ps', type='number', value=4/10, min=0.1, max=1, step=0.01),
-    ]),
-
-    html.Div([
-        html.Label("μ^O: Service rate (OS)"),
-        dcc.Input(id='mu_os', type='number', value=4/10, min=0.1, max=1, step=0.01),
-    ]),
-
-    html.Div([
-        html.Label("μ^F: Service rate (FS)"),
-        dcc.Input(id='mu_fs', type='number', value=4/10, min=0.1, max=1, step=0.01),
-    ]),
-
-    html.Div([
-        html.Label("μ^C: Service rate (CS)"),
-        dcc.Input(id='mu_cs', type='number', value=4/10, min=0.1, max=1, step=0.01),
-    ]),
-
-    html.Div([
-        html.Label("R: # Processing Servers"),
-        dcc.Input(id='m_ps', type='number', value=10, min=1, max=500, step=1),
-    ]),
-
-    html.Div([
-        html.Label("N: # Fog Servers"),
-        dcc.Input(id='m_fs', type='number', value=10, min=1, max=500, step=1),
-    ]),
-
-    html.Div([
-        html.Label("M: # Client Servers"),
-        dcc.Input(id='m_cs', type='number', value=10, min=1, max=500, step=1),
-    ]),
-
-    html.Div([
-        html.Label("δ: Database access probability"),
-        dcc.Slider(id='delta', min=0, max=1, step=0.1, value=0.5),
-    ]),
-
-    html.Div([
-        html.Label("τ: Output server probability"),
-        dcc.Slider(id='tau', min=0, max=1, step=0.1, value=0.5),
-    ]),
-
-    html.Div([
-        html.Label("κ: Fog server exit probability"),
-        dcc.Slider(id='kappa', min=0, max=1, step=0.1, value=0.5),
-    ]),
-
-    html.Button('Calculate', id='calc'),
-
-    dcc.Tabs([
-        dcc.Tab(label='Performance Plots', children=[
-            dcc.Graph(id='throughput-plot'),
-            dcc.Graph(id='response-time-plot'),
-            dcc.Graph(id='mean-customers-plot'),
-            dcc.Graph(id='node-usage-plot')
-        ]),
-        dcc.Tab(label='Summary', children=[
-            html.Pre(id='summary-output')
+        dbc.Row([
+            dbc.Col([
+                dbc.Card([
+                    dbc.CardHeader("Input Parameters"),
+                    dbc.CardBody([
+                        dbc.CardGroup([
+                            dbc.Label("SLA: Guaranteed response time (ms)"),
+                            dcc.Input(id='sla', type='number', value=4, min=0, max=10, step=1, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("J: # Jobs (Customers)"),
+                            dcc.Input(id='jobs', type='number', value=100, min=0, max=500, step=10, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("μ^E: Service rate (ES)"),
+                            dcc.Input(id='mu_es', type='number', value=0.9, min=0.1, max=1, step=0.01, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("μ^D: Service rate (DS)"),
+                            dcc.Input(id='mu_ds', type='number', value=0.4, min=0.1, max=1, step=0.01, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("μ^P: Service rate (PS)"),
+                            dcc.Input(id='mu_ps', type='number', value=0.4, min=0.1, max=1, step=0.01, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("μ^O: Service rate (OS)"),
+                            dcc.Input(id='mu_os', type='number', value=0.4, min=0.1, max=1, step=0.01, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("μ^F: Service rate (FS)"),
+                            dcc.Input(id='mu_fs', type='number', value=0.4, min=0.1, max=1, step=0.01, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("μ^C: Service rate (CS)"),
+                            dcc.Input(id='mu_cs', type='number', value=0.4, min=0.1, max=1, step=0.01, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("R: # Processing Servers"),
+                            dcc.Input(id='m_ps', type='number', value=10, min=1, max=500, step=1, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("N: # Fog Servers"),
+                            dcc.Input(id='m_fs', type='number', value=10, min=1, max=500, step=1, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+                            dbc.Label("M: # Client Servers"),
+                            dcc.Input(id='m_cs', type='number', value=10, min=1, max=500, step=1, className='form-control'),
+                        ]),
+                        dbc.CardGroup([
+        dbc.Card([
+            dbc.CardBody([
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Label("δ: Database access probability"),
+                        dcc.Slider(
+                            id='delta',
+                            min=0,
+                            max=1,
+                            step=0.1,
+                            value=0.5,
+                            marks={0: '0.0', 0.2: '0.2', 0.3: '0.3', 0.4: '0.4', 0.5: '0.5',
+                                   0.6: '0.6', 0.7: '0.7', 0.8: '0.8', 0.9: '0.9', 1: '1.0'},
+                            tooltip={"placement": "bottom", "always_visible": True},
+                            updatemode='drag',
+                        )
+                    ])
+                ])
+            ])
         ])
-    ])
+    ]),
+                        dbc.CardGroup([
+        dbc.Card([
+            dbc.CardBody([
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Label("τ: Output server Probability"),
+                        dcc.Slider(
+                            id='tau',
+                            min=0,
+                            max=1,
+                            step=0.1,
+                            value=0.5,
+                            marks={0: '0.0', 0.2: '0.2', 0.3: '0.3', 0.4: '0.4', 0.5: '0.5',
+                                   0.6: '0.6', 0.7: '0.7', 0.8: '0.8', 0.9: '0.9', 1: '1.0'},
+                            tooltip={"placement": "bottom", "always_visible": True},
+                            updatemode='drag',
+                        )
+                    ])
+                ])
+            ])
+        ])
+    ]),
+                        dbc.CardGroup([
+        dbc.Card([
+            dbc.CardBody([
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Label("κ: Fog Server Exit Probability "),
+                        dcc.Slider(
+                            id='kappa',
+                            min=0,
+                            max=1,
+                            step=0.1,
+                            value=0.5,
+                            marks={0: '0.0', 0.2: '0.2', 0.3: '0.3', 0.4: '0.4', 0.5: '0.5',
+                                   0.6: '0.6', 0.7: '0.7', 0.8: '0.8', 0.9: '0.9', 1: '1.0'},
+                            tooltip={"placement": "bottom", "always_visible": True},
+                            updatemode='drag',
+                        )
+                    ])
+                ])
+            ])
+        ])
+    ]),
+                        dbc.Button('Calculate', id='calc', color='primary', className='mt-3'),
+                    ])
+                ])
+            ], width=6),  # Adjust column width
+
+            dbc.Col([
+                dbc.Card([
+                    dbc.CardHeader("Results"),
+                    dbc.CardBody([
+                        dcc.Tabs([
+
+                            dcc.Tab(label='Performance Plots', children=[
+                                dcc.Graph(id='throughput-plot'),
+                                dcc.Graph(id='response-time-plot'),
+                                dcc.Graph(id='mean-customers-plot'),
+                                dcc.Graph(id='node-usage-plot')
+                            ]),
+                            dcc.Tab(label='Summary', children=[
+                                html.Pre(id='summary-output', style={'padding': '20px', 'backgroundColor': '#f5f5f5'})
+                            ])
+                        ])
+                    ])
+                ])
+            ], width=6)  # Adjust column width
+        ])
+    ], fluid=True)
 ])
 
 # Callback for updating model and plots
@@ -130,33 +190,27 @@ def update_model(sla, jobs, mu_es, mu_ds, mu_ps, mu_os, mu_fs, mu_cs, m_ps, m_fs
     # For simplicity, create random data for demonstration
     throughput = np.random.normal(loc=0.5, scale=0.1, size=jobs)
     mean_time = np.random.normal(loc=5, scale=2, size=jobs)
-    mean_customers = np.random.randint(1, 10, size=6)
-    node_usage = np.random.rand(6)
+    mean_customers = np.random.normal(loc=10, scale=3, size=jobs)
+    node_usage = np.random.normal(loc=70, scale=15, size=m_ps)
 
-    # Throughput plot
-    throughput_fig = go.Figure(data=[go.Scatter(x=np.arange(1, jobs+1), y=throughput, mode='lines+markers')])
-    throughput_fig.update_layout(title='Throughput evolution', xaxis_title='Jobs', yaxis_title='Throughput')
+    # Create plots with axis labels
+    throughput_fig = go.Figure(data=go.Scatter(x=np.arange(jobs), y=throughput, mode='lines', name='Throughput'))
+    throughput_fig.update_layout(title='Throughput vs. Jobs', xaxis_title='Jobs', yaxis_title='Throughput')
 
-    # Response time plot
-    response_time_fig = go.Figure(data=[go.Scatter(x=np.arange(1, jobs+1), y=mean_time, mode='lines+markers')])
-    response_time_fig.add_shape(
-        type="line", x0=1, y0=sla, x1=jobs, y1=sla,
-        line=dict(color="Red", width=2, dash="dash")
-    )
-    response_time_fig.update_layout(title='Mean Time Evolution', xaxis_title='Jobs', yaxis_title='Mean Time')
+    mean_time_fig = go.Figure(data=go.Scatter(x=np.arange(jobs), y=mean_time, mode='lines', name='Response Time'))
+    mean_time_fig.update_layout(title='Response Time vs. Jobs', xaxis_title='Jobs', yaxis_title='Response Time (ms)')
 
-    # Mean customers plot
-    mean_customers_fig = go.Figure(data=[go.Bar(x=['ES', 'PS', 'DS', 'OS', 'CS', 'FS'], y=mean_customers)])
-    mean_customers_fig.update_layout(title='Mean Customers in Each Node', xaxis_title='Node', yaxis_title='Mean Jobs')
+    mean_customers_fig = go.Figure(data=go.Scatter(x=np.arange(jobs), y=mean_customers, mode='lines', name='Mean Customers'))
+    mean_customers_fig.update_layout(title='Mean Customers vs. Jobs', xaxis_title='Jobs', yaxis_title='Mean Customers')
 
-    # Node usage plot
-    node_usage_fig = go.Figure(data=[go.Bar(x=['ES', 'PS', 'DS', 'OS', 'CS', 'FS'], y=node_usage)])
-    node_usage_fig.update_layout(title='Node Usage', xaxis_title='Node', yaxis_title='Usage')
+    node_usage_fig = go.Figure(data=go.Bar(x=np.arange(m_ps), y=node_usage, name='Node Usage'))
+    node_usage_fig.update_layout(title='Node Usage vs. Processing Servers', xaxis_title='Processing Servers', yaxis_title='Usage (%)')
 
-    # Summary output
-    summary_output = f"Summary: SLA={sla}, Jobs={jobs}"
+    # Create a summary output
+    summary_text = f"Summary:\nSLA: {sla} ms\nTotal Jobs: {jobs}\nProcessing Servers: {m_ps}\nFog Servers: {m_fs}\nClient Servers: {m_cs}\n\nThroughput: {np.mean(throughput):.2f}\nMean Response Time: {np.mean(mean_time):.2f} ms\nMean Customers: {np.mean(mean_customers):.2f}\nNode Usage: {np.mean(node_usage):.2f}%"
 
-    return throughput_fig, response_time_fig, mean_customers_fig, node_usage_fig, summary_output
+    return throughput_fig, mean_time_fig, mean_customers_fig, node_usage_fig, summary_text
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
